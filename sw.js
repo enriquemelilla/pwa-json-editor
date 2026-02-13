@@ -1,0 +1,38 @@
+const CACHE_NAME = "json-pwa-editor-v3";
+const ASSETS = [
+  "./",
+  "./index.html",
+  "./app.js",
+  "./db.js",
+  "./quizEngine.js",
+  "./manifest.webmanifest"
+];
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.map(k => (k !== CACHE_NAME ? caches.delete(k) : Promise.resolve())))
+    ).then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener("fetch", (event) => {
+  event.respondWith(
+    caches.match(event.request).then(cached => {
+      return cached || fetch(event.request).then(resp => {
+        // cachea solo GET básicos
+        if (event.request.method === "GET" && resp.ok) {
+          const copy = resp.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+        }
+        return resp;
+      }).catch(() => cached);
+    })
+  );
+});
