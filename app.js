@@ -37,7 +37,7 @@ const aboutBackdrop = el("aboutBackdrop");
 const btnCloseAbout = el("btnCloseAbout");
 
 // Version/autor (edítalo aquí si quieres)
-const APP_VERSION = "1.0.0";
+const APP_VERSION = "2.0.0";
 el("aboutVersion").textContent = APP_VERSION;
 
 // Estado: doc cargado
