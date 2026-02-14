@@ -513,8 +513,14 @@ function renderTest() {
 
     const chosen = currentTest.answers[i];
     if (chosen === idx) {
-      btn.style.outline = "2px solid #60a5fa";
+      // Si la opción seleccionada es correcta → verde, si no → rojo
+      if (idx === q.answer_index) {
+        btn.classList.add("is-correct");
+      } else {
+        btn.classList.add("is-wrong");
+      }
     }
+
 
     btn.addEventListener("click", () => {
       setAnswer(currentTest, idx);
