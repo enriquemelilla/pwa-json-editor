@@ -1,6 +1,6 @@
 {
-  "name": "JSON PWA Editor",
-  "short_name": "JSON Editor",
+  "name": "Quiz PWA",
+  "short_name": "Quiz",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

@@ -3,130 +3,225 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>JSON PWA Editor</title>
+  <title>Quiz PWA</title>
+
   <meta name="theme-color" content="#111827" />
   <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./favicon.ico" />
+
   <style>
-
-
-    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
-    body { margin: 0; background: #0b1020; color: #e5e7eb; }
-    header { padding: 16px; border-bottom: 1px solid #1f2937; background: #0f172a; position: sticky; top: 0; }
-    h1 { font-size: 16px; margin: 0; }
-    main { padding: 16px; display: grid; gap: 16px; max-width: 1100px; margin: 0 auto; }
-    .grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
-    @media (min-width: 900px){ .grid { grid-template-columns: 1fr 1fr; } }
-    .card { background: #111827; border: 1px solid #1f2937; border-radius: 14px; padding: 14px; }
-    .muted { color: #9ca3af; font-size: 13px; }
-    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-    button, input[type="file"]::file-selector-button {
-      background: #2563eb; color: white; border: none; border-radius: 10px;
-      padding: 10px 12px; cursor: pointer; font-weight: 600;
+    :root{
+      --bg:#0b1020;
+      --panel:#111827;
+      --panel2:#0f172a;
+      --line:#1f2937;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --brand:#2563eb;
+      --brand2:#60a5fa;
+      --danger:#dc2626;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
     }
-    button.secondary { background: #374151; }
-    button.danger { background: #dc2626; }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
-    textarea, select {
-      width: 100%; min-height: 160px; border-radius: 12px; border: 1px solid #374151;
-      background: #0b1020; color: #e5e7eb; padding: 10px; box-sizing: border-box;
+    *{ box-sizing:border-box; }
+    body{ margin:0; background:var(--bg); color:var(--text); }
+
+    header{
+      position:sticky; top:0; z-index:50;
+      background:var(--panel2);
+      border-bottom:1px solid var(--line);
+      padding:12px 14px;
+    }
+    .topbar{
+      display:flex; align-items:center; gap:12px;
+      max-width: 980px; margin:0 auto;
+    }
+    .brand-img{
+      width:44px; height:44px; border-radius:14px;
+      background:#0b1020; border:1px solid var(--line);
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden; flex:0 0 auto;
+    }
+    .brand-img img{ width:100%; height:100%; object-fit:cover; }
+    .titles{ flex:1; min-width:0; }
+    .app-title{ margin:0; font-size:16px; font-weight:800; line-height:1.1; }
+    .app-sub{ margin:2px 0 0 0; font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+    main{
+      padding:12px;
+      display:grid;
+      gap:12px;
+      max-width:980px;
+      margin:0 auto;
+    }
+
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+    }
+
+    .muted{ color:var(--muted); font-size:13px; }
+    .small{ font-size:12px; }
+
+    button, input[type="file"]::file-selector-button{
+      background:var(--brand);
+      color:white;
+      border:none;
+      border-radius:14px;
+      padding:14px 14px;
+      cursor:pointer;
+      font-weight:800;
+      width:100%;
+      font-size:16px; /* evita zoom iOS */
+    }
+    button.secondary{ background:#374151; }
+    button.danger{ background:var(--danger); }
+    button:disabled{ opacity:.45; cursor:not-allowed; }
+
+    textarea, select, input[type="number"]{
+      width:100%;
+      border-radius:14px;
+      border:1px solid #374151;
+      background:var(--bg);
+      color:var(--text);
+      padding:12px;
+      font-size:16px;
+    }
+    textarea{
+      min-height:160px;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: 13px;
-    }
-    .dropzone {
-      border: 2px dashed #374151; border-radius: 14px; padding: 18px; text-align: center;
-      background: rgba(255,255,255,0.02);
-    }
-    .dropzone.dragover { border-color: #60a5fa; background: rgba(37,99,235,0.12); }
-    ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
-    li { border: 1px solid #1f2937; border-radius: 12px; padding: 10px; background: #0f172a; }
-    .small { font-size: 12px; }
-    .kbd { font-family: ui-monospace, monospace; background: #0b1020; border: 1px solid #374151; padding: 2px 6px; border-radius: 8px; }
-    .hr { height: 1px; background: #1f2937; margin: 12px 0; }
-    a { color: #93c5fd; text-decoration: none; }
-
-
-        /* --- Mobile-first mejoras --- */
-    main { padding: 12px; }
-    .card { padding: 12px; border-radius: 16px; }
-
-    .grid { grid-template-columns: 1fr !important; } /* siempre 1 columna */
-    @media (min-width: 900px){
-      .grid { grid-template-columns: 1fr 1fr !important; } /* 2 columnas solo en PC */
+      font-size:13px;
     }
 
-    /* Inputs y botones más usables en móvil */
-    button, input, select, textarea {
-      font-size: 16px; /* evita zoom automático en iOS */
+    .row{ display:grid; gap:10px; grid-template-columns:1fr; }
+    @media (min-width: 740px){
+      button{ width:auto; }
+      .row{ display:flex; align-items:center; flex-wrap:wrap; }
+      .row.spread > *{ flex:1; }
     }
 
-    button {
-      width: 100%;
-      padding: 14px 14px;
-      border-radius: 14px;
+    .dropzone{
+      border:2px dashed #374151;
+      border-radius:16px;
+      padding:16px;
+      text-align:center;
+      background: rgba(255,255,255,.02);
+    }
+    .dropzone.dragover{ border-color:var(--brand2); background:rgba(37,99,235,.12); }
+
+    .screen{ display:none; }
+    .screen.active{ display:block; }
+
+    .menu-grid{ display:grid; gap:12px; }
+    .menu-grid button{ text-align:left; }
+    .menu-hint{ margin-top:8px; }
+
+    .pill{
+      display:inline-flex; align-items:center; gap:6px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color:var(--muted);
     }
 
-    .row {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
+    .hr{ height:1px; background:var(--line); margin:12px 0; }
+
+    /* Test */
+    .option-btn{
+      width:100%;
+      padding:14px;
+      border-radius:14px;
+      border:1px solid #374151;
+      background:var(--bg);
+      color:var(--text);
+      text-align:left;
+      cursor:pointer;
+      font-size:15px;
+      font-weight:700;
+    }
+    #testQuestionText{ line-height:1.35; }
+
+    .mobile-bar{
+      position:sticky;
+      bottom:0;
+      background:rgba(15,23,42,.95);
+      border-top:1px solid var(--line);
+      padding:10px;
+      margin-top:12px;
+      border-radius:16px;
     }
 
-    /* En pantallas grandes, volvemos a fila */
-    @media (min-width: 700px){
-      .row { display: flex; }
-      button { width: auto; }
-    }
-
-    /* Opciones del test: estilo tarjeta */
-    .option-btn {
-      width: 100%;
-      padding: 14px;
-      border-radius: 14px;
-      border: 1px solid #374151;
-      background: #0b1020;
-      color: #e5e7eb;
-      text-align: left;
-      cursor: pointer;
-    }
-
-    /* Barra inferior fija (navegación test) */
-    .mobile-bar {
-      position: sticky;
-      bottom: 0;
-      background: rgba(15, 23, 42, 0.95);
-      border-top: 1px solid #1f2937;
-      padding: 10px;
-      margin-top: 12px;
-      border-radius: 16px;
-    }
-
-    /* Párrafo pregunta más legible */
-    #testQuestionText {
-      line-height: 1.35;
-    }
-
-    /* Explicación bien visible */
-    #explanationArea {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid #1f2937;
+    #explanationArea{
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--line);
       padding: 10px;
       border-radius: 14px;
     }
 
-
-
-
+    /* Modal About */
+    .modal-backdrop{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      z-index:100;
+    }
+    .modal-backdrop.open{ display:flex; }
+    .modal{
+      width:min(520px, 100%);
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+    }
+    .modal h3{ margin:0 0 8px 0; font-size:16px; }
+    a{ color:#93c5fd; text-decoration:none; }
   </style>
 </head>
+
 <body>
   <header>
-    <h1>JSON PWA Editor (importar / guardar / exportar)</h1>
-    <div class="muted">Guarda localmente (IndexedDB). Importa JSON desde archivo, arrastrar y soltar o pegar texto.</div>
+    <div class="topbar">
+      <div class="brand-img" aria-hidden="true">
+        <img src="./icons/icon-192.png" alt="" />
+      </div>
+      <div class="titles">
+        <h1 class="app-title">Quiz PWA</h1>
+        <div id="headerSub" class="app-sub">Sin JSON cargado</div>
+      </div>
+      <button id="btnAbout" class="secondary" style="width:auto; padding:10px 12px; border-radius:12px; font-weight:800;">About</button>
+    </div>
   </header>
 
   <main>
-    <div class="grid">
-      <section class="card">
+
+    <!-- PANTALLA 1: MENÚ PRINCIPAL -->
+    <section id="screenMenu" class="screen active">
+      <div class="card">
+        <div class="pill" id="pillState">Estado: sin JSON</div>
+        <div class="menu-grid" style="margin-top:12px;">
+          <button id="btnGoLoad">📥 Cargar JSON</button>
+          <button id="btnGoTest" disabled>📝 Empezar test (JSON cargado)</button>
+          <button id="btnGoHistory">📊 Historial de resultados</button>
+        </div>
+        <div class="muted menu-hint">
+          Consejo: primero carga/selecciona un JSON. Después podrás iniciar el test desde aquí.
+        </div>
+      </div>
+    </section>
+
+    <!-- PANTALLA 2: CARGAR / GESTIONAR JSON (lo que ya tenías) -->
+    <section id="screenLoad" class="screen">
+      <div class="row">
+        <button id="btnBackFromLoad" class="secondary">⟵ Volver al menú</button>
+      </div>
+
+      <div class="card">
         <h2 style="margin:0 0 8px 0; font-size:15px;">Importar JSON</h2>
 
         <div class="row" style="margin: 8px 0 12px 0;">
@@ -135,7 +230,7 @@
         </div>
 
         <div id="dropzone" class="dropzone">
-          <div style="font-weight:700;">Arrastra y suelta aquí tus archivos .json</div>
+          <div style="font-weight:800;">Arrastra y suelta aquí tus archivos .json</div>
           <div class="muted small">También puedes usar el selector de archivos</div>
         </div>
 
@@ -151,17 +246,17 @@
         <p class="muted small" style="margin-top:10px;">
           Consejo: si tu JSON no trae un nombre/título, la app le asigna uno automático.
         </p>
-      </section>
+      </div>
 
-      <section class="card">
+      <div class="card">
         <h2 style="margin:0 0 8px 0; font-size:15px;">JSON guardados</h2>
-        <div class="muted small">Selecciona uno para verlo y exportarlo.</div>
+        <div class="muted small">Selecciona uno para cargarlo (y poder hacer el test).</div>
 
         <div class="row" style="margin: 10px 0;">
           <select id="savedSelect">
             <option value="">— (ninguno) —</option>
           </select>
-          <button id="btnOpen" class="secondary">Abrir</button>
+          <button id="btnOpen" class="secondary">Cargar</button>
           <button id="btnDelete" class="danger" disabled>Borrar</button>
         </div>
 
@@ -176,65 +271,94 @@
         <p id="status" class="muted small" style="margin-top:10px;">
           Estado: listo.
         </p>
-      </section>
-    </div>
-
-    <section class="card">
-      <h2 style="margin:0 0 8px 0; font-size:15px;">Notas rápidas</h2>
-      <ul class="muted small">
-        <li>📌 Esta versión no impone tu “formato Tema 15” todavía: guarda cualquier JSON válido.</li>
-        <li>✅ Cuando me pegues un ejemplo real de tu JSON, añado validación + editor por formularios (preguntas, opciones, correcta…).</li>
-        <li>🔒 Todo queda guardado localmente en el dispositivo (IndexedDB). Para compartir, usa “Exportar”.</li>
-      </ul>
+      </div>
     </section>
-    <section class="card">
-  <h2 style="margin:0 0 8px 0; font-size:15px;">Hacer test</h2>
-  <div class="muted small">
-    Usa un JSON guardado (formato: questions[], question/options/answer_index/explanation).
-  </div>
 
-  <div class="row" style="margin: 10px 0;">
-    <label class="muted small">Nº preguntas:</label>
-    <input id="numQuestions" type="number" min="1" value="10"
-           style="width:120px; padding:10px; border-radius:10px; border:1px solid #374151; background:#0b1020; color:#e5e7eb;" />
-    <button id="btnStartTest">Iniciar test</button>
-    <button id="btnFinishTest" class="secondary" disabled>Finalizar</button>
-  </div>
+    <!-- PANTALLA 3: TEST -->
+    <section id="screenTest" class="screen">
+      <div class="row">
+        <button id="btnBackFromTest" class="secondary">⟵ Volver al menú</button>
+      </div>
 
-  <div id="testArea" style="display:none;">
-    <div class="hr"></div>
+      <div class="card">
+        <div class="muted small">JSON cargado:</div>
+        <div id="testDocTitle" style="font-weight:900; font-size:16px; margin-top:4px;">(sin título)</div>
 
-    <div class="row" style="justify-content: space-between; align-items: center;">
-      <div id="testProgress" style="font-weight:700;">Pregunta 1/10</div>
-      <div id="testScoreMini" class="muted small">Aciertos: 0 · Fallos: 0 · Blancas: 10</div>
-    </div>
+        <div class="hr"></div>
 
-    <div style="margin: 12px 0; font-size: 16px; font-weight: 700;" id="testQuestionText">
-      ...
-    </div>
+        <div class="row" style="margin: 10px 0;">
+          <label class="muted small">Nº preguntas:</label>
+          <input id="numQuestions" type="number" min="1" value="10" style="max-width:160px;" />
+          <button id="btnStartTest">Iniciar test</button>
+          <button id="btnFinishTest" class="secondary" disabled>Finalizar</button>
+        </div>
 
-    <div id="optionsArea" style="display:grid; gap:10px;"></div>
+        <div id="testArea" style="display:none;">
+          <div class="hr"></div>
 
-    <div class="mobile-bar">
-  <div class="row">
-    <button id="btnPrev" class="secondary">⟵ Anterior</button>
-    <button id="btnNext" class="secondary">Siguiente ⟶</button>
-    <button id="btnShowExplanation" class="secondary">Ver explicación</button>
-  </div>
-</div>
+          <div class="row" style="justify-content: space-between; align-items: center;">
+            <div id="testProgress" style="font-weight:900;">Pregunta 1/10</div>
+            <div id="testScoreMini" class="muted small">Aciertos: 0 · Fallos: 0 · Blancas: 10</div>
+          </div>
 
+          <div style="margin: 12px 0; font-size: 16px; font-weight: 900;" id="testQuestionText">...</div>
 
-    <div id="explanationArea" class="muted small" style="margin-top:10px; display:none;"></div>
+          <div id="optionsArea" style="display:grid; gap:10px;"></div>
 
-    <div class="hr"></div>
-    <div id="finalArea" style="display:none;"></div>
-  </div>
-</section>
+          <div class="mobile-bar">
+            <div class="row">
+              <button id="btnPrev" class="secondary">⟵ Anterior</button>
+              <button id="btnNext" class="secondary">Siguiente ⟶</button>
+              <button id="btnShowExplanation" class="secondary">Ver explicación</button>
+            </div>
+          </div>
 
+          <div id="explanationArea" class="muted small" style="margin-top:10px; display:none;"></div>
 
+          <div class="hr"></div>
+          <div id="finalArea" style="display:none;"></div>
+        </div>
+      </div>
+    </section>
 
+    <!-- PANTALLA 4: HISTORIAL -->
+    <section id="screenHistory" class="screen">
+      <div class="row">
+        <button id="btnBackFromHistory" class="secondary">⟵ Volver al menú</button>
+      </div>
+
+      <div class="card">
+        <div class="row" style="justify-content: space-between; align-items:center;">
+          <div>
+            <div style="font-weight:900; font-size:15px;">Historial de tests</div>
+            <div class="muted small">Se guarda localmente en el móvil/PC.</div>
+          </div>
+          <button id="btnClearHistory" class="danger" style="width:auto;">Borrar historial</button>
+        </div>
+
+        <div class="hr"></div>
+        <div id="historyList" class="muted small">Aún no hay resultados.</div>
+      </div>
+    </section>
 
   </main>
+
+  <!-- About modal -->
+  <div id="aboutBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="About">
+    <div class="modal">
+      <h3>About</h3>
+      <div class="muted small" style="line-height:1.4;">
+        <div><b>App:</b> Quiz PWA</div>
+        <div><b>Versión:</b> <span id="aboutVersion">1.0.0</span></div>
+        <div><b>Creador:</b> <span id="aboutCreator">[TU NOMBRE]</span></div>
+        <div><b>Copyright:</b> <span id="aboutCopyright">© [AÑO] [TU NOMBRE]</span></div>
+      </div>
+      <div class="hr"></div>
+      <div class="row">
+        <button id="btnCloseAbout" class="secondary">Cerrar</button>
+      </div>
+    </div>
+  </div>
 
   <script type="module" src="./app.js"></script>
 </body>
